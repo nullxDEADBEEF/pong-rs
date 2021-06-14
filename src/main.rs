@@ -1,6 +1,6 @@
-mod game_state;
-mod bat;
 mod ball;
+mod bat;
+mod game_state;
 
 use std::path;
 

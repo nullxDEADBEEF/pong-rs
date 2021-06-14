@@ -1,4 +1,7 @@
-use ggez::{Context, GameResult, graphics::{self, DrawParam}};
+use ggez::{
+    graphics::{self, DrawParam},
+    Context, GameResult,
+};
 
 type Pos2 = ggez::mint::Point2<f32>;
 
@@ -9,19 +12,22 @@ pub struct Ball {
 }
 
 impl Ball {
-    pub fn new(pos: Pos2, sprite: &graphics::Image) -> Self {
+    pub fn new(pos: Pos2, sprite: graphics::Image) -> Self {
         Self {
             position: pos,
             sprite: sprite.clone(),
-            collider: graphics::Rect::new(pos.x, pos.y, sprite.width() as f32, sprite.height() as f32),
+            collider: graphics::Rect::new(
+                pos.x,
+                pos.y,
+                sprite.width() as f32,
+                sprite.height() as f32,
+            ),
         }
     }
 
-    pub fn update(&self, ctx: &mut Context) {
-
-    }
+    pub fn update(&self, ctx: &mut Context) {}
 
     pub fn render(&self, ctx: &mut Context) -> GameResult {
-        Ok(graphics::draw(ctx, &self.sprite, DrawParam::new().dest(self.position))?)
+        graphics::draw(ctx, &self.sprite, DrawParam::new().dest(self.position))
     }
 }
