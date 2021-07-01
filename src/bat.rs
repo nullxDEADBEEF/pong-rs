@@ -1,30 +1,24 @@
-use ggez::graphics::{self, DrawParam};
+use ggez::graphics::{self, DrawParam, Rect};
 use ggez::input::keyboard;
+use ggez::nalgebra as na;
 use ggez::{Context, GameResult};
 
 use crate::SCREEN_HEIGHT;
 
-type Pos2 = ggez::mint::Point2<f32>;
-
 pub struct Bat {
-    position: Pos2,
-    sprite: graphics::Image,
-    collider: graphics::Rect,
+    pub position: na::Point2<f32>,
+    pub sprite: graphics::Image,
+    pub collider: graphics::Rect,
 }
 
 impl Bat {
-    const PLAYER_SPEED: f32 = 500.0;
+    pub const PLAYER_SPEED: f32 = 500.0;
 
-    pub fn new(pos: Pos2, sprite: graphics::Image) -> Self {
+    pub fn new(pos: na::Point2<f32>, sprite: graphics::Image) -> Self {
         Self {
             position: pos,
             sprite: sprite.clone(),
-            collider: graphics::Rect::new(
-                pos.x,
-                pos.y,
-                sprite.width() as f32,
-                sprite.height() as f32,
-            ),
+            collider: Rect::new(pos.x + sprite.width() as f32, pos.y, 20.0, 125.0),
         }
     }
 
@@ -57,6 +51,12 @@ impl Bat {
         if keyboard::is_key_pressed(ctx, down_key) {
             self.move_down(dt);
         }
+        self.collider.x = self.position.x;
+        self.collider.y = self.position.y;
+        self.collider.move_to(na::Point2::new(
+            self.position.x + 70.0,
+            self.position.y + 15.0,
+        ));
     }
 
     pub fn render(&self, ctx: &mut Context) -> GameResult {

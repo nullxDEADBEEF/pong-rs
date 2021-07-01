@@ -19,7 +19,7 @@ fn main() -> GameResult {
         .window_mode(ggez::conf::WindowMode::default().dimensions(SCREEN_WIDTH, SCREEN_HEIGHT))
         .build()
         .unwrap();
-    ggez::graphics::set_window_title(ctx, "Pong");
+    ggez::graphics::set_window_title(&ctx, "Pong");
 
     let mut game_state = GameState::new(ctx)?;
 
