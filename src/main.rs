@@ -1,6 +1,8 @@
+mod assets;
 mod ball;
 mod bat;
 mod game_state;
+mod impact;
 
 use std::path;
 
@@ -22,6 +24,8 @@ fn main() -> GameResult {
     ggez::graphics::set_window_title(&ctx, "Pong");
 
     let mut game_state = GameState::new(ctx)?;
+
+    println!("{:?}", graphics::renderer_info(ctx)?);
 
     event::run(ctx, event_loop, &mut game_state)
 }

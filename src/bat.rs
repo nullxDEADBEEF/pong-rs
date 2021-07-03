@@ -14,7 +14,7 @@ pub struct Bat {
 impl Bat {
     pub const PLAYER_SPEED: f32 = 500.0;
 
-    pub fn new(pos: na::Point2<f32>, sprite: graphics::Image) -> Self {
+    pub fn new(pos: na::Point2<f32>, sprite: &graphics::Image) -> Self {
         Self {
             position: pos,
             sprite: sprite.clone(),
