@@ -1,3 +1,5 @@
+use ggez::audio;
+use ggez::audio::SoundSource;
 use ggez::nalgebra as na;
 use ggez::timer;
 use ggez::{
@@ -8,6 +10,7 @@ use ggez::{
 use crate::bat::Bat;
 use crate::impact::Impact;
 use crate::SCREEN_HEIGHT;
+use crate::SCREEN_WIDTH;
 
 pub struct Ball {
     position: na::Point2<f32>,
@@ -16,6 +19,7 @@ pub struct Ball {
     sprite: graphics::Image,
     collider: graphics::Rect,
     impact: Option<Impact>,
+    goal_sound: audio::Source,
 }
 
 impl Ball {
@@ -23,7 +27,19 @@ impl Ball {
     const MIN_VELOCITY: f32 = 150.0;
     const BALL_SPEED_UPDATE_RATE: usize = 100;
 
-    pub fn new(pos: na::Point2<f32>, sprite: &graphics::Image) -> Self {
+    pub fn new(ctx: &mut Context, pos: na::Point2<f32>, sprite: &graphics::Image) -> Self {
+        Self {
+            position: pos,
+            velocity: Ball::random_start_vec(),
+            speed: 1.0,
+            sprite: sprite.clone(),
+            collider: graphics::Rect::new(pos.x, pos.y, 24.0, 24.0),
+            impact: None,
+            goal_sound: audio::Source::new(ctx, "/sounds/score_goal0.ogg").unwrap(),
+        }
+    }
+
+    fn random_start_vec() -> na::Vector2<f32> {
         use rand::{thread_rng, Rng};
 
         let mut rng = thread_rng();
@@ -38,32 +54,29 @@ impl Ball {
             velocity_y *= -1.0;
         }
 
-        Self {
-            position: pos,
-            velocity: na::Vector2::<f32>::new(velocity_x, velocity_y),
-            speed: 1.0,
-            sprite: sprite.clone(),
-            collider: graphics::Rect::new(pos.x, pos.y, 24.0, 24.0),
-            impact: None,
-        }
+        na::Vector2::<f32>::new(velocity_x, velocity_y)
+    }
+
+    fn play_goal_sound(&mut self) {
+        self.goal_sound.set_volume(0.2);
+        self.goal_sound.play().expect("could not play goal sound");
+    }
+
+    fn reset(&mut self) {
+        self.position = na::Point2::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0);
+        self.speed = 1.0;
+        self.velocity = Ball::random_start_vec();
     }
 
     pub fn collision_with_bat(
         &mut self,
         ctx: &mut Context,
-        bat: &Bat,
+        bat: &mut Bat,
         is_bat1: bool,
         impact_assets: &[graphics::Image],
     ) {
         if self.collider.overlaps(&bat.collider) {
-            let impact_position = na::Point2::new(
-                if is_bat1 {
-                    bat.position.x + self.position.x
-                } else {
-                    bat.position.x
-                },
-                self.position.y,
-            );
+            let impact_position = na::Point2::new(self.position.x - 10.0, self.position.y);
             self.impact = Some(
                 Impact::new(
                     ctx,
@@ -83,8 +96,19 @@ impl Ball {
                 self.velocity.x = -self.velocity.x.abs();
             }
         }
+
         if self.impact.is_some() {
             self.impact.as_mut().unwrap().update();
+        }
+
+        if self.position.x < 0.0 && !is_bat1 {
+            bat.score += 1;
+            self.reset();
+            self.play_goal_sound();
+        } else if self.position.x > SCREEN_WIDTH && is_bat1 {
+            self.reset();
+            self.play_goal_sound();
+            bat.score += 1;
         }
     }
 

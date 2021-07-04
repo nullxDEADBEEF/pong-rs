@@ -16,7 +16,7 @@ pub struct Impact {
 }
 
 impl Impact {
-    const FRAME_SPEED: i32 = 20;
+    const FRAME_SPEED: i32 = 6;
 
     pub fn load_assets(ctx: &mut Context) -> GameResult<Vec<graphics::Image>> {
         Ok(vec![
@@ -38,7 +38,7 @@ impl Impact {
             position: pos,
             sprite: sprites[0].clone(),
             sprites: sprites.to_owned(),
-            hit_sound: audio::Source::new(ctx, "/sounds/hit0.ogg")?,
+            hit_sound: audio::Source::new(ctx, "/sounds/bounce0.ogg")?,
             current_frame: 0,
             frame_rate: 6,
         })

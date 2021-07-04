@@ -9,6 +9,7 @@ pub struct Bat {
     pub position: na::Point2<f32>,
     pub sprite: graphics::Image,
     pub collider: graphics::Rect,
+    pub score: u8,
 }
 
 impl Bat {
@@ -19,6 +20,7 @@ impl Bat {
             position: pos,
             sprite: sprite.clone(),
             collider: Rect::new(pos.x + sprite.width() as f32, pos.y, 20.0, 125.0),
+            score: 0,
         }
     }
 
